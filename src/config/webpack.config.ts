@@ -43,7 +43,7 @@ const getStyleLoaders = (options: any, preProcessor?: string) => {
   return loader
 }
 
-const baseConfig: webpack.Configuration = {
+export const baseConfig: webpack.Configuration = {
   entry: paths.appIndex,
   module: {
     rules: [
