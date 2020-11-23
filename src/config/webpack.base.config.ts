@@ -1,6 +1,7 @@
-import path from 'path'
 import * as webpack from 'webpack'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 import { paths } from './paths'
+import { isEnvProduction } from './env'
 
 const hasJsxRuntime = (() => {
   // 禁用新的 jsx
@@ -85,10 +86,58 @@ export const baseConfig: webpack.Configuration = {
           {
             test: sassModuleRegex,
             use: getStyleLoaders({ importLoaders: 3, modules: true }, 'sass-loader')
+          },
+          {
+            test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+            loader: 'file-loader',
+            options: {
+              name: 'static/media/[name].[ext]'
+            }
+          },
+          {
+            test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+            loader: 'file-loader',
+            options: {
+              limit: 3000,
+              name: 'static/fonts/[name].[ext]'
+            }
+          },
+          {
+            test: /\.(png|jpe?g|gif|bpm|svg|ico)(\?.*)?$/,
+            loader: 'url-loader',
+            options: {
+              limit: 3000,
+              name: 'static/img/[name].[ext]'
+            }
           }
           // ***** stop ****** Are you adding a new loader?
         ]
       }
     ]
-  }
+  },
+  plugins: [
+    new HtmlWebpackPlugin(
+      Object.assign(
+        {
+          template: paths.appHtml
+        },
+        isEnvProduction
+          ? {
+              minify: {
+                removeComments: true,
+                collapseWhitespace: true,
+                removeRedundantAttributes: true,
+                useShortDoctype: true,
+                removeEmptyAttributes: true,
+                removeStyleLinkTypeAttributes: true,
+                keepClosingSlash: true,
+                minifyJS: true,
+                minifyCSS: true,
+                minifyURLs: true
+              }
+            }
+          : undefined
+      )
+    )
+  ]
 }
